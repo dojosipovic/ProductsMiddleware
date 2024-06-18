@@ -13,9 +13,14 @@ namespace ProductsMiddleware.Services
             _apiClient = apiClient;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async Task<Product> GetProductByIdAsync(int id)
         {
-            var response = await _apiClient.GetAsync<ProductResponse>("products?limit=0");
+            return await _apiClient.GetAsync<Product>($"products/{id}");
+        }
+
+        public async Task<IEnumerable<ProductItem>> GetProductsAsync()
+        {
+            var response = await _apiClient.GetAsync<ProductResponse>("products?limit=0&select=thumbnail,title,price,description");
             return response.products;
         }
     }
