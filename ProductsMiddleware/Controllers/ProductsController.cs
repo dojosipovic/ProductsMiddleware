@@ -18,9 +18,13 @@ namespace ProductsMiddleware.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ProductItem>))]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetProducts([FromQuery] string? search = null)
         {
             var products = await _productService.GetProductsAsync();
+            if (!string.IsNullOrEmpty(search))
+            {
+                products = products.Where(p => p.title.ToLower().Contains(search.ToLower()));
+            }
             return Ok(products);
         }
 
@@ -30,15 +34,6 @@ namespace ProductsMiddleware.Controllers
         {
             var product = await _productService.GetProductByIdAsync(id);
             return Ok(product);
-        }
-
-        [HttpGet("{search}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<ProductItem>))]
-        public async Task<IActionResult> SearchProductsByName([FromQuery] string term)
-        {
-            var products = await _productService.GetProductsAsync();
-            var filtered = products.Where(p => p.title.ToLower().Contains(term.ToLower()));
-            return Ok(filtered);
         }
     }
 
